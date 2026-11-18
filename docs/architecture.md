@@ -15,7 +15,7 @@ number means the same boundary in both.
 | PostgreSQL 16 | one database, one schema per storybook | storybook `server/migrations/` |
 | Photos | `/etc/storybook/uploads/book_<n>/`, written by the backend, read by nginx | storybook `ops/README.md` |
 | Nightly backup | `pg_dump` + photos, age-encrypted; pulled to the laptop with a read-only key; monthly restore test | storybook `ops/backup.sh` |
-| dk-home | the landing page of the domain, a static site | dk-home, dk-srv `dk-site-update` |
+| dk-home | the landing page, a static site that nginx serves at the domain root (the storybook has its own host name) | dk-home, dk-srv `dk-site-update` |
 | dk-srv | CIS hardening (USG: 92.7 % of all rules, 100 % with 13 accepted risks), nightly security check, maintenance mode and lockdown, AIDE, auditd, fail2ban, site watch, firewall in and out, phone notifications | dk-srv |
 
 ## Target: a hardened k3s node
@@ -36,7 +36,7 @@ configuration ([template](templates/component-readme.md)); the column "README" s
 | PostgreSQL | StatefulSet with a persistent volume | 3 | storybook `deploy/` |
 | Photos volume | originals and small versions; ReadWriteOnce, so backend and worker share one node | 3 | storybook `deploy/` |
 | Backup CronJob | dump + photos, age-encrypted; restore test monthly | 3 | storybook `deploy/` |
-| Landing page | dk-home as a small static container | 1, 3 | dk-home |
+| Landing page | dk-home as a small static container, served at the domain root | 1, 3 | dk-home |
 | Keycloak | identities: logins for the apps (OIDC), MFA/passkeys, single sign-on for Argo CD and Grafana, `kubectl` login | 2, 4 | `platform/keycloak/` |
 | Vault | secrets: short-lived database credentials, Kubernetes auth | 4 | `platform/vault/` |
 | Cilium | the network: default-deny between pods, egress by DNS name | 4 | `platform/cilium/` |

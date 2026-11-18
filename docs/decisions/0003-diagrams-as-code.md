@@ -2,8 +2,7 @@
 
 - **Status:** accepted
 - **Date:** 2026-11-17
-- **Decided by:** the owner (DimiJonas)
-- **Prepared by:** Claude (options, information, recommendation)
+- **Decision-maker:** DimiJonas
 
 ## Context and problem
 
@@ -35,15 +34,12 @@ picture is complex or the position of things carries meaning. TikZ pictures live
 [`docs/diagrams/`](../diagrams/): the `.tex` source, the shared style `dk-diagram.sty`, and the
 generated `.svg` (committed, with a white background), built by `build.sh`.
 
-**Reason (owner, in his own words):** "I want to use Mermaid as the default and switch to TikZ
-where Mermaid hits its limits and pictures don't look good, or are more complex such that
-positioning is important for visual understanding. Mermaid is easy and fast and can be drawn by
-GitHub itself, so it's very convenient. I don't want to use draw.io since I don't want to draw by
-hand. D2 and PlantUML are not drawn by GitHub, so there is no benefit with them over TikZ for me,
-since I don't have to write the image code myself anyway. Also I already have TeX installed on my
-development machine."
-
-Claude's recommendation was the same.
+**Reasoning:** Mermaid is fast to write and rendered by GitHub itself, which makes it the most
+convenient default. Where its automatic layout reaches its limits – complex pictures, or pictures
+in which the position of elements carries meaning – TikZ gives full control. draw.io is ruled out
+because pictures should be written as code, not drawn by hand. D2 and PlantUML would need a build
+step just like TikZ, without matching its control; their simpler syntax is not a deciding
+advantage here. TeX is already part of the development setup.
 
 **First application:** the "now" and "target" pictures were drafted in both. Mermaid's automatic
 layout made the target unreadable (tiny, arrows crossing, no way to mark trust boundaries), so the

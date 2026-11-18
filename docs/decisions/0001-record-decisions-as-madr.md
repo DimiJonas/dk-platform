@@ -2,23 +2,23 @@
 
 - **Status:** accepted
 - **Date:** 2026-11-17
-- **Decided by:** the owner (DimiJonas)
-- **Prepared by:** Claude (options, information, recommendation)
+- **Decision-maker:** DimiJonas
 
 ## Context and problem
 
 The platform will need many decisions (repositories, tools, security trade-offs), and the
 repositories should show later – to me and to others – why things are the way they are. In
 storybook and dk-srv, decisions live in "Decided:" sections of the roadmaps: no status, not
-linkable one by one, and the options that were rejected aren't recorded. Which format should the
-platform's decisions have – and how are they made?
+linkable one by one, and the options that were rejected aren't recorded. Options and drafts are
+prepared with the help of an AI tool; the decisions and their reasoning are my own. Which format
+should the platform's decisions have – and how are they made?
 
 ## Decision drivers
 
 - the options considered must be recorded, not only the result
-- a decision must still make sense to me years later: in my own words
+- the reasoning must still be understandable years later
 - easy to find and to link; a status (proposed, accepted, superseded)
-- little writing effort for me (Claude prepares the records)
+- little writing effort (the records are drafted with tool support)
 
 ## Considered options
 
@@ -29,24 +29,23 @@ platform's decisions have – and how are they made?
 
 ## Decision
 
-**Chosen option: MADR (3), slightly shortened** – plus the rule how a decision is made: Claude
-lays out the options with the information that matters and a recommendation, clearly marked as
-Claude's; I decide and give my reason in my own words; the ADR records both.
+**Chosen option: MADR (3), slightly shortened** – together with a rule for how decisions are
+made: the options are laid out with the information that matters before anything is decided, and
+the decision is recorded with its reasoning.
 
-**Reason (owner, in his own words):** "The MADR format seems to include all information used for
-the decision, and since you write it mostly I don't have the disadvantage of having to write long
-records. Y-statements: I don't like that sentence format. I think it's okay that the previous
-ADRs [in storybook and dk-srv] have the format of option 1. From now on they should be put in an
-actual ADR format."
-
-Claude's recommendation was the same (MADR, shortened, with a line for the owner's reason).
+**Reasoning:** MADR captures everything that informs a decision – the drivers, the options and
+their trade-offs – so the reasoning can still be traced years later. Because the records are
+drafted with tool support, the longer format costs little effort. Y-statements were rejected: the
+single-sentence form is too compressed to read well. Nygard's format lacks a place for the options
+considered. The earlier decisions in storybook and dk-srv keep their original form; every new
+decision is recorded as an ADR.
 
 ## Consequences
 
 - Good: every decision has its options, its reason and its consequences in one linkable file; the
   repositories show how decisions were made.
-- Good: the reason is mine, so the decision means something to me later.
-- Bad: a decision takes a little longer – the options are laid out before I decide.
+- Good: options are weighed before deciding, not after – the decisions are better informed.
+- Bad: a decision takes a little longer.
 - The old "Decided:" sections in storybook and dk-srv stay as they are.
 - Revisit when: the records get too heavy to keep up with.
 

@@ -2,7 +2,7 @@
 
 ## Where we are
 
-*Updated with every delivery – this section is also the hand-over to a new chat.*
+*Updated with every delivery – this section is also the hand-over to a new working session.*
 
 - **Last finished:** 0.3 – this repository, its document structure, ADRs 0001–0004, the "now" and
   "target" pictures.
@@ -12,10 +12,10 @@
 - **Production:** unchanged – the VPS with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
 
-**Starting a new chat** (when a chat gets long and starts being compressed): attach the brief and
-the current zips of the repositories and write: *"Read the brief and the repositories. Continue
-dk-platform at the step named under 'Where we are' in its ROADMAP.md."* Everything needed lives in
-the repositories, not in the chat.
+**Starting a new AI session** (when a session gets long and its history starts being compressed):
+attach the brief and the current zips of the repositories and write: *"Read the brief and the
+repositories. Continue dk-platform at the step named under 'Where we are' in its ROADMAP.md."*
+Everything needed lives in the repositories, not in the session.
 
 ---
 
@@ -31,9 +31,9 @@ flowchart LR
 1. **Learn** – before a technology is used: what problem it solves, how it works inside, how it
    fits here, alternatives, its security relevance, the official docs. With diagrams.
 2. **Quiz** – questions to check I can reproduce it.
-3. **Design and decide** – the design and its open decisions. For each decision: the options with
-   the information that matters and a recommendation (clearly marked as Claude's); I decide and
-   give my reason in my own words. Recorded as an ADR in [`docs/decisions/`](docs/decisions/)
+3. **Design and decide** – the design and its open decisions. For each decision the options are
+   laid out with the information that matters; then I decide, and the decision is recorded with
+   its reasoning as an ADR in [`docs/decisions/`](docs/decisions/)
    ([ADR 0001](docs/decisions/0001-record-decisions-as-madr.md)).
 4. **Build and test** – in a sandbox first; secret scanning (gitleaks), linters, scanners.
 5. **Deliver** – I apply every change myself: patches (`git diff --binary`) for existing
@@ -45,7 +45,7 @@ flowchart LR
    pod.
 
 Ground rules: production keeps running and stays secure the whole time; no secret and no domain in
-any repository, patch or chat; fix what reaches the running app, no workarounds for unimportant
+any repository, patch or AI session; fix what reaches the running app, no workarounds for unimportant
 findings (e.g. development-only tools); current versions and docs are checked, not remembered.
 
 Status marks: ✅ done · 🔄 in progress · 🔜 planned

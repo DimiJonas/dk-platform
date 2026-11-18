@@ -16,7 +16,7 @@
   \node[app=44mm]  (backend) at (10.3,6.4) {\textbf{Backend} (Node, Express)\\own user, systemd sandbox\\reads uploads: sharp, exiftool};
   \node[store=24mm] (db)     at (14.3,7.3) {PostgreSQL 16};
   \node[store=24mm] (photos) at (14.3,5.0) {Photos};
-  \node[plat=30mm] (home)    at (5.4,4.4) {\textbf{dk-home}\\static page};
+  \node[plat=36mm] (home)    at (5.4,4.4) {\textbf{dk-home}\\static, domain root};
   \node[app=36mm]  (backup)  at (10.3,3.5) {\textbf{Nightly backup} (cron)\\pg\_dump + photos, age};
   \node[plat=108mm] (dksrv)  at (9.5,0.9) {\textbf{dk-srv:} CIS hardening \textperiodcentered{} nightly security check \textperiodcentered{} AIDE \textperiodcentered{} auditd\\fail2ban \textperiodcentered{} site watch \textperiodcentered{} firewall in and out \textperiodcentered{} phone notifications};
   % --- flows ---

@@ -2,8 +2,7 @@
 
 - **Status:** proposed | accepted | superseded by [NNNN](NNNN-....md)
 - **Date:** YYYY-MM-DD
-- **Decided by:** the owner (DimiJonas)
-- **Prepared by:** Claude (options, information, recommendation)
+- **Decision-maker:** DimiJonas
 
 ## Context and problem
 
@@ -23,9 +22,7 @@
 
 **Chosen option: {option}.**
 
-**Reason (owner, in his own words):** "{the owner's reason}"
-
-Claude's recommendation was {option} – {one sentence, or "the same"}.
+**Reasoning:** {why this option fits best, and why the others were rejected}
 
 ## Consequences
 

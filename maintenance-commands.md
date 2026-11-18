@@ -14,7 +14,7 @@ and tested. **Until the cutover (phase 7), production is maintained with storybo
 |---|---|---|
 | A picture needs changing | [Pictures](#pictures) | ✅ |
 | A decision has to be made or recorded | [A new ADR](#a-new-adr) | ✅ |
-| The chat got long – move to a new one | [A new chat](#a-new-chat) | ✅ |
+| The AI session got long – move to a new one | [A new AI session](#a-new-ai-session) | ✅ |
 | Deploying a new version of an app | | 5 |
 | The site or an app is down | | 3, 6 |
 | A critical vulnerability in an app's dependencies → maintenance mode | | 3 |
@@ -49,17 +49,17 @@ and tested. **Until the cutover (phase 7), production is maintained with storybo
 
 ## A new ADR
 
-1. Claude lays out the options with the information that matters and a recommendation.
-2. You decide and give your reason in your own words.
+1. Lay out the options with the information that matters.
+2. Decide, and write down the reasoning.
 3. The ADR is written from [`docs/decisions/adr-template.md`](docs/decisions/adr-template.md) as
    the next number, added to the index in [`docs/decisions/README.md`](docs/decisions/README.md),
    and the decision is removed from the roadmap's "Open decisions".
 
-## A new chat
+## A new AI session
 
-When a chat gets long and is being compressed:
+When a session gets long and its history is being compressed:
 
 1. Make sure the last delivery is applied and pushed, and [`ROADMAP.md`](ROADMAP.md)'s "Where we
    are" is current.
-2. Start a new chat with the brief and fresh zips of the repositories, and the line from "Where we
-   are" ("Starting a new chat").
+2. Start a new session with the brief and fresh zips of the repositories, and the line from
+   "Where we are" ("Starting a new AI session").

@@ -15,7 +15,7 @@
   % top band: landing page, edge, identity
   \draw[zone] (0.4,10.7) rectangle (4.6,13.0);
   \node[zonelabel, anchor=north west] at (0.4,13.0) {dk-home};
-  \node[app=30mm] (home) at (2.5,11.7) {\textbf{Landing page}\\static};
+  \node[app=33mm] (home) at (2.5,11.7) {\textbf{Landing page}\\static, domain root};
   \node[plat=36mm] (traefik) at (7.0,11.85) {\textbf{Traefik}\\TLS (cert-manager), WAF,\\rate limits};
   \draw[zone] (9.8,10.7) rectangle (19.0,13.0);
   \node[zonelabel, anchor=north west] at (9.8,13.0) {identity and secrets};

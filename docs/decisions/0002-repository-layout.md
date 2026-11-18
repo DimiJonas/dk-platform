@@ -2,8 +2,7 @@
 
 - **Status:** accepted
 - **Date:** 2026-11-17
-- **Decided by:** the owner (DimiJonas)
-- **Prepared by:** Claude (options, information, recommendation)
+- **Decision-maker:** DimiJonas
 
 ## Context and problem
 
@@ -39,11 +38,9 @@ never be public; everything else should be visible as a showcase. Which reposito
 | `dk-platform-env` | per environment (local, production): the domain, which version of each app and component runs, overlays, SOPS-encrypted secrets | private |
 | `dk-srv` | the host (unchanged in its role) | public |
 
-**Reason (owner, in his own words):** "It's the most versatile and extendable. Only the
-environment files have to be private. All other repos are nice to showcase and don't have anything
-to hide."
-
-Claude's recommendation was the same.
+**Reasoning:** This layout is the most flexible and grows best as more apps are added. Only
+the environment-specific data – the domain and the secrets – needs to be private. The app and
+platform repositories contain nothing sensitive and serve as a public portfolio of the work.
 
 ## Consequences
 

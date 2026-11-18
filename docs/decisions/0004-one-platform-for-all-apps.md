@@ -2,8 +2,7 @@
 
 - **Status:** accepted
 - **Date:** 2026-11-17
-- **Decided by:** the owner (DimiJonas)
-- **Prepared by:** Claude (options, information, recommendation)
+- **Decision-maker:** DimiJonas
 
 ## Context and problem
 
@@ -33,13 +32,11 @@ namespace with its own NetworkPolicies, RBAC, Vault paths and database role; the
 (Traefik, cert-manager, Keycloak, Vault, Argo CD, Kyverno, monitoring) shared. The landing page is
 one of the apps.
 
-**Reason (owner, in his own words):** "It fits my vision for my domain and my app environment. I
-only run apps that I develop myself, so the risk of all apps sharing one cluster is acceptable for
-me. Also I can still run untrusted apps in a separate cluster if I ever want to run untrusted apps.
-I don't like the vCluster option as that is too much complexity, and Kubernetes only for the
-storybook seems like a bit of a waste."
-
-Claude's recommendation was the same.
+**Reasoning:** A shared cluster matches the intended setup: one domain with several
+self-developed apps on subdomains. Since every app is developed in-house, the risk of a shared
+kernel and control plane is acceptable – untrusted workloads would go to a separate cluster.
+Virtual clusters add more complexity than they are worth here, and running Kubernetes for a single
+app would leave the platform underused.
 
 ## Consequences
 
@@ -51,8 +48,8 @@ Claude's recommendation was the same.
   namespace.
 - **Rule:** untrusted workloads (code I don't control, apps open to strangers) don't share this
   cluster – they get their own node or cluster.
-- **Open:** third-party services I might want to host – e.g. a voice chat server, a proxy, a VPN
-  for my own access – are neither my own code nor untrusted strangers' apps. Before one of them
+- **Open:** third-party services that might be hosted later – e.g. a voice chat server, a proxy, a
+  VPN for own access – are neither self-developed nor untrusted strangers' apps. Before one of them
   runs here, a new ADR decides where it goes.
 - Revisit when: the first third-party or untrusted service is wanted, or the apps' trust levels
   start to differ.
