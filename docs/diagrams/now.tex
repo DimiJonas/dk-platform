@@ -1,0 +1,49 @@
+% The storybook as it runs today: one hardened VPS. Build: ./build.sh
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage{dk-diagram}
+\begin{document}
+\begin{tikzpicture}
+  % --- outside ---
+  \node[ext=24mm] (users)  at (1.4,6.4) {\textbf{Phones, browsers}\\Anna, Ben};
+  \node[ext=24mm] (laptop) at (1.4,3.2) {\textbf{Laptop (you)}\\development, age key};
+  \node[ext=24mm] (github) at (1.4,0.9) {\textbf{GitHub}\\repositories};
+  \node[ext=34mm] (ext)    at (18.7,7.4) {\textbf{Internet services}\\OSM tiles, Nominatim, ntfy.sh};
+  \node[ext=34mm] (phone)  at (18.7,4.6) {\textbf{Your phone}\\notifications};
+  % --- the server ---
+  \draw[zone] (3.2,-0.3) rectangle (15.9,8.7);
+  \node[zonelabel, anchor=north east] at (15.9,8.7) {VPS \textperiodcentered{} Ubuntu 24.04, hardened by dk-srv};
+  \node[plat=38mm] (nginx)   at (5.4,6.4) {\textbf{nginx}\\TLS (certbot), the built app,\\photo login check, map tiles};
+  \node[app=44mm]  (backend) at (10.3,6.4) {\textbf{Backend} (Node, Express)\\own user, systemd sandbox\\reads uploads: sharp, exiftool};
+  \node[store=24mm] (db)     at (14.3,7.3) {PostgreSQL 16};
+  \node[store=24mm] (photos) at (14.3,5.0) {Photos};
+  \node[plat=30mm] (home)    at (5.4,4.4) {\textbf{dk-home}\\static page};
+  \node[app=36mm]  (backup)  at (10.3,3.5) {\textbf{Nightly backup} (cron)\\pg\_dump + photos, age};
+  \node[plat=108mm] (dksrv)  at (9.5,0.9) {\textbf{dk-srv:} CIS hardening \textperiodcentered{} nightly security check \textperiodcentered{} AIDE \textperiodcentered{} auditd\\fail2ban \textperiodcentered{} site watch \textperiodcentered{} firewall in and out \textperiodcentered{} phone notifications};
+  % --- flows ---
+  \draw[flow] (users.east) -- (nginx.west);
+  \draw[flow] (nginx.east) -- (backend.west);
+  \draw[flow] (nginx.south) -- (home.north);
+  \draw[flow] ($(nginx.south east)+(-0.4,0)$) |- (photos.west);
+  \draw[flow] ($(backend.east)+(0,0.4)$) -- (db.west |- {$(backend.east)+(0,0.4)$});
+  \draw[flow] ($(backend.south east)+(-0.3,0)$) -- (photos.north west);
+  \draw[line] (nginx.north) |- (10.3,8.15);
+  \draw[line] (backend.north) |- (16.3,8.15) -- (16.3,7.4);
+  \draw[line] (dksrv.east) -| (16.3,7.4);
+  \draw[flow] (16.3,7.4) -- (ext.west);
+  \draw[flow] (ext.south) -- (phone.north);
+  \draw[flow] (backup.east) -| (photos.south);
+  \draw[flow] (backup.east) -| (15.6,7.3) -- (db.east);
+  \draw[flow] (laptop.east) -- node[note, above, sloped, pos=0.45] {SSH: admin, backup pull} (backup.west);
+  \draw[flow] (github.east) -- (dksrv.west);
+  % --- trust boundaries ---
+  \node[tb] at ($(users.east)!0.5!(nginx.west)$) {1};
+  \node[tb] at ($(nginx.east)!0.5!(backend.west)$) {2};
+  \node[tb] at ($(backend.north west)+(-0.12,0.12)$) {3};
+  \node[tb] at (15.9,8.15) {4};
+  \node[tb] at ($(github.east)!0.5!(dksrv.west)$) {5};
+  \node[tb] at (3.2,3.26) {6};
+  \node[tb] at ($(backend.south west)+(-0.12,-0.12)$) {7};
+  \dklegend{9.9,-0.6}
+  \dkbackground
+\end{tikzpicture}
+\end{document}

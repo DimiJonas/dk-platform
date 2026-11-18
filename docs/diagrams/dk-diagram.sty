@@ -1,0 +1,57 @@
+% Shared look of the platform's TikZ pictures (docs/diagrams/*.tex).
+% Colours: purple = the apps, teal = identity and secrets, grey = platform and outside world,
+% red circles = trust boundaries (numbered the same in every picture).
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dk-diagram}
+\RequirePackage{tikz}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[scaled=0.95]{helvet}
+\RequirePackage[none]{hyphenat}
+\renewcommand{\familydefault}{\sfdefault}
+\usetikzlibrary{arrows.meta,shapes.geometric,backgrounds,calc,positioning}
+\definecolor{dkappfill}{HTML}{EEEDFE}\definecolor{dkappline}{HTML}{534AB7}
+\definecolor{dkidfill}{HTML}{E1F5EE}\definecolor{dkidline}{HTML}{0F6E56}
+\definecolor{dkplatfill}{HTML}{F1EFE8}\definecolor{dkplatline}{HTML}{5F5E5A}
+\definecolor{dkextline}{HTML}{888780}
+\definecolor{dkzone}{HTML}{888780}
+\definecolor{dkred}{HTML}{A32D2D}
+\definecolor{dkflow}{HTML}{444441}
+\tikzset{
+  base/.style={draw, rounded corners=2pt, align=center, font=\small, inner sep=3pt,
+    minimum height=10mm, line width=0.5pt, text width=#1},
+  base/.default=30mm,
+  app/.style={base=#1, fill=dkappfill, draw=dkappline},
+  app/.default=30mm,
+  idn/.style={base=#1, fill=dkidfill, draw=dkidline},
+  idn/.default=30mm,
+  plat/.style={base=#1, fill=dkplatfill, draw=dkplatline},
+  plat/.default=30mm,
+  ext/.style={base=#1, fill=white, draw=dkextline},
+  ext/.default=30mm,
+  store/.style={cylinder, shape border rotate=90, aspect=0.22, draw=dkappline, fill=dkappfill,
+    align=center, font=\small, minimum width=#1, minimum height=11mm, line width=0.5pt},
+  store/.default=22mm,
+  zone/.style={draw=dkzone, dashed, rounded corners=5pt, line width=0.5pt},
+  zonelabel/.style={font=\footnotesize\itshape, text=dkplatline, inner sep=2pt},
+  flow/.style={-{Stealth[length=2.2mm]}, line width=0.6pt, draw=dkflow, rounded corners=2pt},
+  line/.style={line width=0.6pt, draw=dkflow, rounded corners=2pt},
+  tb/.style={circle, fill=dkred, text=white, font=\scriptsize\bfseries, inner sep=0pt,
+    minimum size=4.2mm},
+  note/.style={font=\scriptsize, text=dkplatline, align=center},
+}
+% white background, so the picture reads in GitHub's dark mode too
+\newcommand{\dkbackground}{%
+  \begin{scope}[on background layer]
+    \fill[white] ($(current bounding box.south west)+(-0.3,-0.3)$)
+      rectangle ($(current bounding box.north east)+(0.3,0.3)$);
+  \end{scope}}
+% the legend of the trust boundaries, below a picture
+\newcommand{\dklegend}[1]{%
+  \node[note, anchor=north, text width=18cm] at (#1) {%
+    \textcolor{dkred}{\textbf{Trust boundaries}}\quad
+    \textbf{1} internet $\rightarrow$ edge \quad \textbf{2} edge $\rightarrow$ app \quad
+    \textbf{3} untrusted files $\rightarrow$ the code that reads them \quad
+    \textbf{4} server $\rightarrow$ internet \\[1pt]
+    \textbf{5} Git and registry $\rightarrow$ server (supply chain) \quad
+    \textbf{6} admin $\rightarrow$ server \quad
+    \textbf{7} app $\rightarrow$ host (what a broken-out process could reach)};}

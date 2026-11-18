@@ -1,0 +1,20 @@
+# TeX's helper files, if a picture is compiled by hand instead of with docs/diagrams/build.sh
+*.aux
+*.log
+*.pdf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# editors and the system
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# never commit secrets in plain text (encrypted ones belong in dk-platform-env, not here)
+.env
+*.env
+*.key
+*.age
+kubeconfig*
