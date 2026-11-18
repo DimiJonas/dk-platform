@@ -61,7 +61,6 @@ Each platform component gets its own `README.md` next to its configuration (temp
 
 ## Status
 
-A personal project, built alongside daily life – no fixed dates. Next: the pictures for storybook
-and dk-srv, then the threat model.
+A personal project, built alongside daily life – no fixed dates. Next: the threat model.
 
 © All rights reserved. The code is public to read; there is no license for reuse.

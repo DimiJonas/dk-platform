@@ -4,10 +4,10 @@
 
 *Updated with every delivery – this section is also the hand-over to a new working session.*
 
-- **Last finished:** 0.3 – this repository, its document structure, ADRs 0001–0004, the "now" and
-  "target" pictures.
-- **Next:** 0.4 – architecture pictures for storybook and dk-srv (Mermaid, as patches).
-- **Then:** 0.5 – the threat model.
+- **Last finished:** 0.4 – Mermaid pictures in storybook (how it runs, a photo upload) and dk-srv
+  (the host at a glance, the nightly security check); both link here.
+- **Next:** 0.5 – the threat model.
+- **Then:** 0.6 – the RAM and disk budget.
 - **Open decisions:** see [below](#open-decisions).
 - **Production:** unchanged – the VPS with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
@@ -75,7 +75,7 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 | 0.1 | Read storybook and dk-srv; a summary of what the move has to handle ([architecture](docs/architecture.md#what-the-move-has-to-handle)) | ✅ |
 | 0.2 | Learning map; first explanation: containers, Kubernetes, IAM, the target architecture | ✅ |
 | 0.3 | This repository: documents, ADRs 0001–0004, the "now" and "target" pictures; dk-platform-env's README | ✅ |
-| 0.4 | Architecture pictures for storybook and dk-srv (Mermaid) | 🔜 |
+| 0.4 | Pictures for storybook (how it runs; uploading a photo) and dk-srv (the host at a glance; the nightly security check), in Mermaid | ✅ |
 | 0.5 | Threat model: data flows, trust boundaries 1–7, STRIDE per boundary, the resulting requirements | 🔜 |
 | 0.6 | RAM and disk budget: 4 GB now, 8 GB, 16 GB – what fits, measured later per pod | 🔜 |
 | 0.7 | The open decisions sorted by the phase that needs them | 🔜 |
