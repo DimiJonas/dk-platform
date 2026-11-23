@@ -4,10 +4,11 @@
 
 *Updated with every delivery – this section is also the hand-over to a new working session.*
 
-- **Last finished:** 0.4 – Mermaid pictures in storybook (how it runs, a photo upload) and dk-srv
-  (the host at a glance, the nightly security check); both link here.
-- **Now:** 0.5 – the threat model: learned and quizzed; next its design and decisions.
-- **Then:** 0.6 – the RAM and disk budget.
+- **Last finished:** 0.5 – the threat model ([`docs/threat-model.md`](docs/threat-model.md), the
+  transition in [`docs/threat-model-transition.md`](docs/threat-model-transition.md)), the
+  requirements ([`docs/security-requirements.md`](docs/security-requirements.md)), ADR 0005.
+- **Next:** 0.6 – the RAM and disk budget.
+- **Then:** 0.7 – the open decisions sorted by phase.
 - **Open decisions:** see [below](#open-decisions).
 - **Production:** unchanged – the server with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
@@ -78,7 +79,7 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 | 0.2 | Learning map; first explanation: containers, Kubernetes, IAM, the target architecture | ✅ |
 | 0.3 | This repository: documents, ADRs 0001–0004, the "now" and "target" pictures; dk-platform-env's README | ✅ |
 | 0.4 | Pictures for storybook (how it runs; uploading a photo) and dk-srv (the host at a glance; the nightly security check), in Mermaid | ✅ |
-| 0.5 | Threat model: data flows, trust boundaries 1–7, STRIDE per boundary, the resulting requirements | 🔜 |
+| 0.5 | Threat model: data flows, STRIDE per element and a LINDDUN pass, 54 + 7 threats rated, 59 requirements with checks ([ADR 0005](docs/decisions/0005-threat-modelling-method.md)) | ✅ |
 | 0.6 | RAM and disk budget: what each component needs – estimated now, measured per pod in phases 3–6 | 🔜 |
 | 0.7 | The open decisions sorted by the phase that needs them | 🔜 |
 
@@ -154,13 +155,20 @@ volumes.
 
 ## Open decisions
 
-Each becomes an ADR when its phase comes – with the options laid out first.
+Each becomes an ADR when its phase comes – with the options laid out first. Every phase also works
+through its part of [`docs/security-requirements.md`](docs/security-requirements.md), and ends with a
+review of the [threat model](docs/threat-model.md).
 
 | Decision | Needed in | Notes |
 |---|---|---|
 | How a photo's GPS position becomes its town when the worker may not reach the internet (exact positions are never stored) | 1 | worker hands over / backend reads / worker may reach Nominatim |
 | Who serves the photos after the login check | 1 / 3 | frontend nginx or backend; Traefik's ForwardAuth asks the backend either way |
 | The worker's image: exiftool needs Perl | 1 | minimal image with Perl, or another way to read and strip GPS data |
+| Positions to Nominatim: exact or rounded (R-17) | 1 | threat T-17 |
+| The originals' other metadata: removed or kept (R-19) | 1 | threat T-19 |
+| How long logs with IP addresses are kept (R-47) | 3 | threat T-50 |
+| The admin path to the Kubernetes API: SSH tunnel or VPN (R-37) | 4 | threat T-38 |
+| Notifications: minimal text on ntfy.sh, or ntfy on the platform (R-46) | 6 | threat T-49 |
 | How the existing users move to Keycloak | 2 | new passwords/passkeys, or a provider that reads bcrypt |
 | Ingress, Gateway API or Traefik's own routes | 3 | |
 | PostgreSQL as a plain StatefulSet or with an operator (e.g. CloudNativePG) | 3 | |

@@ -41,10 +41,19 @@ no privilege escalation) is measured per workload in phases 1 and 4.
 
 ## What's protected, against whom
 
-To be written with the threat model (step 0.5): the assets (private photos and texts, logins, the
-platform's credentials), the attackers (internet-wide scanners and bots, password guessing, known
-vulnerabilities, a crafted upload, a compromised dependency or image, a stolen device), and the
-trust boundaries 1–7 of [`docs/architecture.md`](docs/architecture.md#trust-boundaries).
+From the [threat model](docs/threat-model.md) (method: [ADR 0005](docs/decisions/0005-threat-modelling-method.md)):
+
+- **Assets:** the storybooks' photos and texts, the photos' exact positions (never stored, but
+  present in uploads), who wrote what, the logins, the platform's own credentials (cluster admin,
+  Argo CD, Vault, the age keys, the CI's signing identity), the backups.
+- **The threat to avoid above all:** someone outside the circle of users reading or changing the
+  content, or taking over a login, the server or the platform.
+- **Attackers:** bots and scanners, password guessers, published exploits, crafted uploads,
+  compromised dependencies and images, a stolen device, the admin's own mistakes. A targeted,
+  skilled attacker is considered unlikely – the app is private and not advertised.
+- **Result:** 54 threats to the target (16 of priority high) and 7 to the transition, each
+  answered by requirements with a check: [`docs/security-requirements.md`](docs/security-requirements.md)
+  – the list each phase works through.
 
 ## Scorecards
 
@@ -57,7 +66,7 @@ Numbered **P1, P2, …** (the host's are A1–A13 in dk-srv; the storybook's own
 
 | | Risk | Why it's accepted |
 |---|---|---|
-| – | none yet | |
+| P1 | The hosting provider can technically access the server (hypervisor, console, disk snapshots) | Unavoidable on a rented server. Limited by keeping what matters encrypted where possible: the backups (age) leave the server, secrets are encrypted at rest (phase 4); the provider is chosen as trustworthy. Out of scope of the threat model. |
 
 ## Reporting a problem
 

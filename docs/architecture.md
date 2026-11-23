@@ -57,7 +57,8 @@ configuration ([template](templates/component-readme.md)); the column "README" s
 | 6 | admin → server | SSH with keys | SSH, `kubectl` with OIDC and RBAC, single sign-on |
 | 7 | app → host | systemd sandbox | container: PSS "restricted", seccomp, non-root, read-only; Falco watches |
 
-The threat model (step 0.5) goes through each boundary with STRIDE.
+The [threat model](threat-model.md) goes through the flows across these boundaries, with STRIDE and,
+for personal data, LINDDUN.
 
 ## Today → target
 

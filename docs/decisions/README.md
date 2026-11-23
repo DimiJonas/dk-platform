@@ -23,6 +23,7 @@ New ADR: copy [`adr-template.md`](adr-template.md) to the next number.
 | [0002](0002-repository-layout.md) | App repositories + public platform repository + private environment repository | accepted | 2026-11-17 |
 | [0003](0003-diagrams-as-code.md) | Pictures as code: Mermaid by default, TikZ where layout matters | accepted | 2026-11-17 |
 | [0004](0004-one-platform-for-all-apps.md) | One cluster for all own apps on the domain, a namespace per app | accepted | 2026-11-17 |
+| [0005](0005-threat-modelling-method.md) | Threat modelling: target and transition apart, Markdown and Mermaid, a 3×3 rating, STRIDE plus LINDDUN, requirements separate | accepted | 2026-11-23 |
 
 Decisions made before this repository existed are in the roadmaps of
 [storybook](https://github.com/DimiJonas/storybook/blob/main/ROADMAP.md) and

@@ -50,6 +50,8 @@ no server size or provider.
 | [`ROADMAP.md`](ROADMAP.md) | the phases and steps, how we work, where we are, the open decisions |
 | [`docs/architecture.md`](docs/architecture.md) | now and target, component by component; what the move has to handle |
 | [`docs/decisions/`](docs/decisions/) | the decisions (ADRs): options, reasons, consequences |
+| [`docs/threat-model.md`](docs/threat-model.md) | what can go wrong, rated, and what's done about it (the transition: [its own file](docs/threat-model-transition.md)) |
+| [`docs/security-requirements.md`](docs/security-requirements.md) | the requirements from the threat model, phase by phase, each with its check |
 | [`docs/learning-map.md`](docs/learning-map.md) | every technology: what it is, what it's for here, where to read |
 | [`SECURITY.md`](SECURITY.md) | the guides per layer, the measured scores, the accepted risks |
 | [`HARDENING.md`](HARDENING.md) | how the hardening is done and measured, mechanism by mechanism |
@@ -62,6 +64,6 @@ Each platform component gets its own `README.md` next to its configuration (temp
 
 ## Status
 
-A personal project, built alongside daily life – no fixed dates. Next: the threat model.
+A personal project, built alongside daily life – no fixed dates. Next: the RAM and disk budget.
 
 © All rights reserved. The code is public to read; there is no license for reuse.
