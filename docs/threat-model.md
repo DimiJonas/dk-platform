@@ -81,7 +81,7 @@ reviewed.
 | Logins and sessions | confidentiality, integrity |
 | The platform's credentials: cluster admin, Argo CD's repository access, Vault's unseal keys and root token, the age keys, the CI's signing identity | confidentiality – each one opens a lot |
 | The backups | confidentiality, integrity, availability |
-| The service itself | availability (a family app – a day's outage is annoying, not critical) |
+| The service itself | availability |
 
 ### Attackers (threat agents)
 
@@ -95,7 +95,7 @@ reviewed.
 | A user overstepping | someone in the circle trying more than their rights allow | low |
 | A thief | a stolen phone (a user's session) or laptop (admin keys – disk encrypted) | low |
 | The admin's own mistakes | a misconfiguration, a committed secret, a forgotten open port | medium |
-| A targeted, skilled attacker | anything above, combined and patient | low – the app is private and not advertised |
+| A targeted, skilled attacker | anything above, combined and patient | low |
 
 ### Data-flow diagram, level 0
 
