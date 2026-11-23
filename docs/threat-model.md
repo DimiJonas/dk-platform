@@ -8,7 +8,8 @@ pass for privacy, a 3×3 rating. Each threat (T-xx) leads to requirements (R-xx)
 phase. The temporary risks of the move itself are in
 [`threat-model-transition.md`](threat-model-transition.md).
 
-**Status:** first version, 2026-11-23 (phase 0). Reviewed at the end of every phase and whenever a
+**Status:** first version, 2026-11-23 (phase 0); level-0 diagram in TikZ and the backups' sidekick
+server added with step 0.6. Reviewed at the end of every phase and whenever a
 component or flow is added.
 
 ## How to read it
@@ -100,63 +101,12 @@ reviewed.
 ### Data-flow diagram, level 0
 
 The whole platform. Circles are processes, cylinders are data stores, rectangles are external
-entities; each frame is a trust zone, so every arrow crossing a frame crosses a trust boundary.
+entities; each dashed frame is a trust zone, so every arrow crossing a frame crosses a trust
+boundary. The red numbers are the same trust boundaries as in the
+[architecture pictures](architecture.md). Built from
+[`diagrams/dfd-level0.tex`](diagrams/dfd-level0.tex).
 
-```mermaid
-flowchart TB
-  subgraph internet["Internet"]
-    users["Phones, browsers"]
-    laptop["Admin laptop"]
-    gh["GitHub, GHCR"]
-    ext["Nominatim, ntfy.sh,<br/>OSM tiles, Let's Encrypt"]
-  end
-  subgraph node["k3s node – host hardened by dk-srv"]
-    traefik(("Traefik<br/>+ WAF"))
-    subgraph sb["namespace storybook"]
-      fe(("Frontend"))
-      be(("Backend"))
-      worker(("Photo<br/>worker"))
-      pg[("PostgreSQL")]
-      pv[("Photos")]
-      bk(("Backup<br/>job"))
-    end
-    subgraph id["identity and secrets"]
-      kc(("Keycloak"))
-      kcdb[("Keycloak DB")]
-      vault(("Vault"))
-    end
-    subgraph plat["platform"]
-      api(("Kubernetes<br/>API"))
-      state[("Cluster state,<br/>Secrets")]
-      argo(("Argo CD"))
-      mon(("Monitoring"))
-      logs[("Logs,<br/>metrics")]
-    end
-  end
-  users --> traefik
-  traefik --> fe
-  traefik --> be
-  traefik --> kc
-  be --> pg
-  be --> pv
-  be --> kc
-  be --> vault
-  be --> ext
-  worker --> pg
-  worker --> pv
-  kc --> kcdb
-  vault --> pg
-  bk --> pg
-  bk --> pv
-  laptop --> api
-  laptop --> kc
-  laptop -. "pulls backups" .-> bk
-  gh --> argo
-  argo --> api
-  api --> state
-  mon --> logs
-  mon --> ext
-```
+![Level-0 data-flow diagram: phones and browsers reach Traefik with the WAF (boundary 1), which passes requests to the frontend, the backend and Keycloak (boundary 2). The backend uses PostgreSQL and the photos, Keycloak, Vault and the internet services; the photo worker reads the photos and PostgreSQL (boundary 3); Vault creates the database users; Keycloak uses its own database. The backup job writes encrypted backups, which the sidekick server pulls (ADR 0007). Monitoring stores logs and metrics and sends alerts to ntfy.sh (boundary 4). Argo CD takes from GitHub and the registry (boundary 5) and applies through the Kubernetes API to the cluster state. The admin laptop reaches the Kubernetes API and Keycloak's admin console (boundary 6). Boundary 7 separates the pods from the host.](diagrams/dfd-level0.svg)
 
 The level-1 diagrams below zoom into one area each.
 
@@ -224,7 +174,7 @@ whoever uploaded it.
 | T-14 | worker | D | a decompression bomb or a huge image exhausts memory | M | L | L | mitigate | R-15 |
 | T-15 | worker | D | a photo that always crashes the worker blocks the queue forever | M | L | L | mitigate | R-15 |
 | T-16 | photos, PostgreSQL (through a compromised worker) | T, I, D | a compromised worker reads, alters or deletes photos, or messes with the job table | L | H | M | mitigate | R-16 |
-| T-17 | flow 6 | I · LINDDUN: data disclosure, linking | exact positions are sent to a third party (the OpenStreetMap Foundation runs Nominatim) | H | M | **H** | mitigate (proposed) | R-17 |
+| T-17 | flow 6 | I · LINDDUN: data disclosure, linking | the exact positions of photos are sent to a third party (the OpenStreetMap Foundation runs Nominatim) – searches and points picked on the map are sent as the user chose them, by design | H | M | **H** | mitigate | R-17 |
 | T-18 | photos | I · LINDDUN: identifying | the exact position stays in the original when Nominatim can't be reached, until a retry | M | M | M | mitigate | R-18 |
 | T-19 | photos | I · LINDDUN: identifying | other metadata stays in the originals (camera model and serial, time) | H | L | M | decide in phase 1 | R-19 |
 
@@ -349,19 +299,25 @@ flowchart LR
   pv[("Photos")]
   bk(("Backup job"))
   files[("Encrypted backups<br/>on the node")]
+  side[("Sidekick server<br/>all versions")]
   laptop["Admin laptop<br/>age key"]
   pg --> bk
   pv --> bk
   bk -->|"1 age-encrypted"| files
-  laptop -->|"2 pulls, read-only"| files
+  side -->|"2 pulls, read-only"| files
+  laptop -->|"3 copies"| side
 ```
 
 | ID | Element / flow | Letter | Threat | L | I | P | Response | R |
 |---|---|---|---|---|---|---|---|---|
-| T-45 | backups | I | backup files stolen from the node or the laptop | L | H | M | mitigate | R-43 |
+| T-45 | backups | I | backup files stolen from the node, the sidekick server or the laptop | L | H | M | mitigate | R-43 |
 | T-46 | backups | T, D | an attacker on the node alters or deletes the backups (ransomware-style) | L | H | M | mitigate | R-44 |
 | T-47 | backup job | D | backups fail silently, or a restore doesn't work when it's needed | M | H | **H** | mitigate | R-45 |
 | T-48 | backups | LINDDUN: unawareness | photos removed in the edit form stay in the backups, without the users knowing | H | L | M | accept – deliberately (see below) | – |
+
+The sidekick server pulls the backups from phase 7 on
+([ADR 0007](decisions/0007-backups-pulled-to-a-sidekick-server.md)); until then the laptop pulls
+them, as today.
 
 ### h. Across the platform: monitoring, logs, egress
 

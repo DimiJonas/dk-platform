@@ -23,7 +23,7 @@ named.
 | R-14 | The photo worker is isolated: no incoming connections, outgoing only to PostgreSQL, non-root, read-only root filesystem, all capabilities dropped, seccomp `RuntimeDefault`, no ServiceAccount token, a tight memory limit | T-13 | connectivity tests (nothing reaches it; it reaches nothing but PostgreSQL); the pod spec | – the conversion runs inside the backend | 🔜 |
 | R-15 | Hostile input is bounded: a pixel limit, a time limit per job, attempts counted – a job that keeps failing ends as "failed" | T-14, T-15 | test files (a decompression bomb, a broken image) → the job fails, the worker keeps running | ◐ sharp's default pixel limit | 🔜 |
 | R-16 | A compromised worker can do little harm: its database role only on the job table; photo backups append-only and off the node (R-44); unexpected activity in the worker raises an alert (phase 6) | T-16 | the role's grants; a backup test; a Falco test event | ◐ backups append-only | 🔜 |
-| R-17 | *(proposed)* Positions are sent to Nominatim with reduced precision – e.g. rounded to about 1 km, enough for the town | T-17 | the request in a test shows rounded coordinates | – exact | 🔜 |
+| R-17 | A photo's position is sent to Nominatim rounded to about 1 km (two decimals – the same rounding the place cache already uses), enough for the town; text searches and points picked on the map stay exact, since the user chose them (decided 2026-11-23) | T-17 | the request for a photo in a test shows rounded coordinates; a map-picked point stays exact | – exact | 🔜 |
 | R-18 | An exact position never stays: it's removed from the original whether or not the town lookup works | T-18 | an upload with GPS while Nominatim is blocked → the stored original has no position | – stays until a retry | 🔜 |
 | R-19 | *(proposed)* The originals' other metadata (camera model and serial, …) is decided: removed, or kept deliberately | T-19 | `exiftool` on a stored original | – kept | 🔜 |
 | R-30 | Dependencies are controlled: lockfiles, `npm ci`, minimal base images, Trivy; in CI (phase 5) also SBOMs and update pull requests with review | T-12, T-31 | Trivy and SBOM per image; the CI jobs | ◐ lockfiles, nightly `npm audit` | 🔜 |
@@ -51,9 +51,9 @@ named.
 | R-10 | The edge stays current and can be shut: Traefik and the WAF updated quickly (Renovate, phase 5), scanned; maintenance mode and lockdown as Kubernetes actions | T-09 | the update pull requests; the scan report; lockdown tried | ✅ nightly security check, lockdown | 🔜 |
 | R-11 | Changes are traceable: the app's change history kept; access logs at the edge and in Keycloak | T-10 | a change shows up in the history with its author | ✅ change history | 🔜 |
 | R-12 | Responses reveal no internals: generic error messages, no version headers | T-11 | headers and error pages checked | ✅ | 🔜 |
-| R-43 | Backups are encrypted with age; the private key only on the laptop; pulled with a read-only key | T-45 | a backup file is age-encrypted; the pull key can't write | ✅ | 🔜 |
-| R-44 | Backups are out of the node's reach: pulled, not pushed; photos append-only; versions kept (7 days, 12 months) | T-46 | the node can't delete the laptop's copies | ✅ | 🔜 |
-| R-45 | Restoring is proven: a monthly automatic restore test; a failed or missing backup raises an alert | T-47 | the test's log; a simulated failure → notification | ◐ failures notified; a backup that never runs isn't | 🔜 |
+| R-43 | Backups are encrypted with age on the node; the private key only on the laptop; pulled with a read-only key | T-45 | a backup file is age-encrypted; the pull key can't write | ✅ | 🔜 |
+| R-44 | Backups are out of the node's reach: pulled, not pushed – by the laptop until phase 7, then every night by the sidekick server ([ADR 0007](decisions/0007-backups-pulled-to-a-sidekick-server.md)); photos append-only; versions kept (7 days, 12 months) | T-46 | the node can't delete or reach the pulled copies | ✅ pulled by the laptop | 🔜 |
+| R-45 | Restoring is proven: a monthly automatic restore test; a failed or missing backup, or a missed pull, raises an alert | T-47 | the test's log; a simulated failure → notification | ◐ failures notified; a backup that never runs isn't | 🔜 |
 | R-47 | Logs with personal data are limited: a retention period, readable only by the admin, no tokens or secrets in logged URLs | T-50 | the retention settings; a sample of the logs | ◐ not set deliberately | 🔜 |
 
 ## Phase 4: cluster security
@@ -89,7 +89,7 @@ named.
 
 | ID | Requirement | Threats | Verified by | Today | Status |
 |---|---|---|---|---|---|
-| R-46 | *(proposed)* Notifications carry no names or IP addresses through ntfy.sh – or ntfy runs on the platform itself | T-49 | a sample notification | – name and IP sent | 🔜 |
+| R-46 | *(proposed)* Notifications through a public ntfy server carry no names or IP addresses – or ntfy runs on our own server (where: an open decision of phase 6, the sidekick server is a candidate) | T-49 | a sample notification | – name and IP sent | 🔜 |
 | R-48 | The watchers are watched: an outside uptime check and a heartbeat – a missing heartbeat raises an alert | T-51 | Alertmanager stopped → the missing heartbeat is reported | ◐ the site watch | 🔜 |
 | R-49 | Grafana, Prometheus and Loki aren't public: single sign-on and the admin group only | T-52 | a request from outside → refused | – | 🔜 |
 

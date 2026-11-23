@@ -1,0 +1,91 @@
+% Threat model, level-0 data-flow diagram of the target platform. Build: ./build.sh
+% Circles = processes, cylinders = data stores, rectangles = external entities, dashed frames =
+% trust zones; red circles = the trust boundaries 1-7 (same numbers as now.tex and target.tex).
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage{dk-diagram}
+\begin{document}
+\begin{tikzpicture}
+  % --- outside the node ---
+  \node[ext=22mm] (laptop) at (1.2,15.6) {\textbf{Admin laptop}};
+  \node[ext=28mm] (users)  at (4.2,15.6) {\textbf{Phones, browsers}};
+  \node[ext=41mm] (ext)    at (15.4,15.6) {\textbf{Internet services}\\Nominatim, ntfy.sh, OSM, LE};
+  \node[ext=24mm] (gh)     at (18.9,15.6) {\textbf{GitHub, GHCR}};
+  \node[ext=22mm] (side)   at (-1.5,5.6) {\textbf{Sidekick}\\\textbf{server}};
+  \node[note, anchor=north] at (-1.5,4.95) {pulls ciphertext\\(ADR 0007)};
+  % --- the node ---
+  \draw[zone, line width=0.8pt] (0,-0.7) rectangle (20.4,14.2);
+  \node[zonelabel, anchor=south east] at (20.4,-0.7) {k3s node \textperiodcentered{} host hardened by dk-srv};
+  \node[pproc] (traefik) at (4.2,12.3) {Traefik\\+ WAF};
+  % identity and secrets
+  \draw[zone] (6.2,11.0) rectangle (14.2,13.6);
+  \node[zonelabel, anchor=north east] at (14.2,13.6) {identity and secrets};
+  \node[iproc]  (kc)    at (7.6,12.3) {Keycloak};
+  \node[istore=20mm] (kcdb) at (10.0,12.3) {Keycloak\\DB};
+  \node[iproc]  (vault) at (12.6,12.3) {Vault};
+  % the storybook
+  \draw[zone] (0.9,4.2) rectangle (13.4,10.4);
+  \node[zonelabel, anchor=south west] at (0.9,4.2) {namespace storybook};
+  \node[proc] (fe) at (2.2,9.0) {Frontend};
+  \node[proc] (be) at (4.9,9.0) {Backend};
+  \node[proc] (worker) at (11.6,7.2) {Photo\\worker};
+  \node[proc] (bk) at (4.9,5.6) {Backup\\job};
+  \draw[zone] (7.0,4.6) rectangle (9.8,10.0);
+  \node[zonelabel, anchor=south] at (8.4,4.6) {data};
+  \node[store=21mm] (pg) at (8.4,8.7) {PostgreSQL};
+  \node[store=21mm] (pv) at (8.4,6.3) {Photos};
+  % monitoring
+  \draw[zone] (14.0,4.2) rectangle (19.2,10.4);
+  \node[zonelabel, anchor=south west] at (14.0,4.2) {monitoring};
+  \node[pproc] (mon) at (16.4,8.4) {Monitoring};
+  \node[pstore=20mm] (logs) at (16.4,5.8) {Logs,\\metrics};
+  % platform
+  \draw[zone] (0.4,0.0) rectangle (19.2,3.6);
+  \node[zonelabel, anchor=south east] at (19.2,0.0) {platform};
+  \node[pstore=24mm] (state) at (2.6,1.8) {Cluster state,\\Secrets};
+  \node[pproc] (api)   at (6.4,1.8) {Kubernetes\\API};
+  \node[pproc] (argo)  at (10.4,1.8) {Argo CD};
+  % --- flows ---
+  \draw[flow] (users.south) -- (traefik.north);
+  \draw[flow] (traefik) -- (fe);
+  \draw[flow] (traefik) -- (be);
+  \draw[flow] (traefik) -- (kc);
+  \draw[flow] (kc) -- (kcdb);
+  \draw[flow] (be) -- (pg.west);
+  \draw[flow] (be) -- (pv.north west);
+  \draw[flow] (worker) -- (pg.east);
+  \draw[flow] (worker) -- (pv.east);
+  \draw[flow] (bk.east) -- (7.0,5.6);
+  % the backend's outgoing flows: Keycloak, Vault, the internet services
+  \draw[line] ($(be.north)+(0.45,-0.1)$) |- (14.8,10.7);
+  \draw[flow] (7.6,10.7) -- (kc.south);
+  \draw[flow] (12.25,10.7) -- (12.25,11.53);
+  \draw[flow] (14.8,10.7) -- (14.8,15.0);
+  % Vault creates the short-lived database users
+  \draw[flow] (12.95,11.53) |- (9.8,9.7);
+  % monitoring: alerts to ntfy.sh
+  \draw[flow] (mon) -- (logs);
+  \draw[flow] (mon.north) -- (16.4,15.0);
+  % supply chain
+  \draw[flow] (19.8,15.0) |- (argo.east);
+  \draw[flow] (argo) -- (api);
+  \draw[flow] (api) -- (state);
+  % admin: the cluster API, and the Keycloak admin console (the path is an open decision, R-37)
+  \draw[flow] (0.25,15.0) -- (0.25,0.6) -| (api.south);
+  \draw[flow] (0.55,15.0) |- (7.6,13.4) -- (kc.north);
+  % backups leave the node as ciphertext only
+  \draw[flow, dashed] (bk.west) -- (side.east);
+  % --- trust boundaries ---
+  \node[tb] at (4.2,14.2) {1};
+  \node[tb] at ($(traefik)!0.62!(be)$) {2};
+  \node[tb] at (6.2,12.3) {2};
+  \node[tb] at ($(worker.north west)+(-0.05,0.05)$) {3};
+  \node[tb] at (14.8,14.2) {4};
+  \node[tb] at (16.4,14.2) {4};
+  \node[tb] at (19.8,14.2) {5};
+  \node[tb] at (0.4,14.2) {6};
+  \node[tb] at (0,5.6) {6};
+  \node[tb] at (0.9,5.6) {7};
+  \dklegend{9,-1.2}
+  \dkbackground
+\end{tikzpicture}
+\end{document}

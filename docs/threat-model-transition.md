@@ -7,6 +7,9 @@ Same method and rating as the [threat model of the target](threat-model.md)
 [`security-requirements.md`](security-requirements.md#phase-7-go-live-and-the-transition). These
 threats end with the cutover and the old server's retirement (phase 7).
 
+**Kept brief on purpose:** this document is short-lived. It's reviewed once, before the migration
+rehearsal, and isn't part of the reviews at the end of every phase.
+
 ```mermaid
 flowchart LR
   old[("Today's server<br/>database, photos")]

@@ -38,6 +38,15 @@
   tb/.style={circle, fill=dkred, text=white, font=\scriptsize\bfseries, inner sep=0pt,
     minimum size=4.2mm},
   note/.style={font=\scriptsize, text=dkplatline, align=center},
+  % data-flow diagrams: processes are circles, data stores cylinders, external entities rectangles
+  proc/.style={circle, draw=dkappline, fill=dkappfill, align=center, font=\footnotesize,
+    minimum size=17mm, inner sep=1pt, line width=0.5pt},
+  iproc/.style={proc, draw=dkidline, fill=dkidfill},
+  pproc/.style={proc, draw=dkplatline, fill=dkplatfill},
+  istore/.style={store=#1, draw=dkidline, fill=dkidfill},
+  istore/.default=22mm,
+  pstore/.style={store=#1, draw=dkplatline, fill=dkplatfill},
+  pstore/.default=22mm,
 }
 % white background, so the picture reads in GitHub's dark mode too
 \newcommand{\dkbackground}{%

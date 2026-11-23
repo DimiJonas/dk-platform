@@ -4,11 +4,13 @@
 
 *Updated with every delivery – this section is also the hand-over to a new working session.*
 
-- **Last finished:** 0.5 – the threat model ([`docs/threat-model.md`](docs/threat-model.md), the
-  transition in [`docs/threat-model-transition.md`](docs/threat-model-transition.md)), the
-  requirements ([`docs/security-requirements.md`](docs/security-requirements.md)), ADR 0005.
-- **Next:** 0.6 – the RAM and disk budget.
-- **Then:** 0.7 – the open decisions sorted by phase.
+- **Last finished:** 0.6 – the RAM and disk budget
+  ([`docs/resource-budget.md`](docs/resource-budget.md)), the resource policy
+  ([ADR 0006](docs/decisions/0006-resource-policy.md)), backups pulled by a sidekick server
+  ([ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md)), the threat model's
+  level-0 diagram in TikZ.
+- **Next:** 0.7 – the open decisions sorted by the phase that needs them.
+- **Then:** phase 1 – containers.
 - **Open decisions:** see [below](#open-decisions).
 - **Production:** unchanged – the server with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
@@ -80,7 +82,7 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 | 0.3 | This repository: documents, ADRs 0001–0004, the "now" and "target" pictures; dk-platform-env's README | ✅ |
 | 0.4 | Pictures for storybook (how it runs; uploading a photo) and dk-srv (the host at a glance; the nightly security check), in Mermaid | ✅ |
 | 0.5 | Threat model: data flows, STRIDE per element and a LINDDUN pass, 54 + 7 threats rated, 59 requirements with checks ([ADR 0005](docs/decisions/0005-threat-modelling-method.md)) | ✅ |
-| 0.6 | RAM and disk budget: what each component needs – estimated now, measured per pod in phases 3–6 | 🔜 |
+| 0.6 | RAM and disk budget: what each component needs – estimated now, measured per pod in phases 1–6 ([budget](docs/resource-budget.md)); resource policy ([ADR 0006](docs/decisions/0006-resource-policy.md)); backups pulled by a sidekick server ([ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md)) | ✅ |
 | 0.7 | The open decisions sorted by the phase that needs them | 🔜 |
 
 ### 1. Containers 🔜
@@ -111,7 +113,8 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
   probes, requests and limits, Jobs and CronJobs
 - Traefik and cert-manager in place of nginx and certbot
 - backup and restore-test CronJobs (age-encrypted, pulled to the laptop like today; monthly restore
-  test)
+  test; from phase 7 pulled by the sidekick server –
+  [ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md))
 - maintenance mode and lockdown as Kubernetes actions
 - dk-platform-env gets its first content (the local environment)
 
@@ -120,8 +123,9 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 RBAC and ServiceAccounts · Pod Security Standards "restricted" · Cilium: default-deny and egress by
 DNS name · Kyverno · a WAF (Coraza with the OWASP Core Rule Set, detection first, then blocking) ·
 SOPS + age · Vault (Kubernetes auth, short-lived database credentials) · Secrets encrypted at rest ·
-the API server's audit log · kube-bench (k3s profile, CIS Kubernetes Benchmark), Kubescape, Trivy
-Operator – **measured before and after**, like USG on the host ([SECURITY.md](SECURITY.md)).
+the API server's audit log · requests and limits on every pod, a Kyverno rule refusing BestEffort
+pods ([ADR 0006](docs/decisions/0006-resource-policy.md)) · kube-bench (k3s profile, CIS Kubernetes
+Benchmark), Kubescape (configuration only), Trivy Operator – **measured before and after**, like USG on the host ([SECURITY.md](SECURITY.md)).
 
 ### 5. CI/CD and GitOps 🔜
 
@@ -139,7 +143,10 @@ for dk-srv's site watch and notifications.
 On a production server sized by the measurements of phases 3–6: dk-srv
 adapted for a k3s node (forwarding on, the pod and service networks in the firewall, image
 registries and Let's Encrypt in the egress rules, AIDE/auditd exclusions for k3s's folders,
-fail2ban's nginx jails replaced, USG measured again) · migration rehearsal (database, photos) ·
+fail2ban's nginx jails replaced, USG measured again) · an inventory of the host's packages
+(`apt-mark showmanual`) in dk-srv, so a new server is set up from a list · the sidekick server for
+the backups ([ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md)), hardened with
+dk-srv · migration rehearsal (database, photos) ·
 cutover with the old server as the way back · runbooks in
 [`maintenance-commands.md`](maintenance-commands.md).
 
@@ -164,11 +171,12 @@ review of the [threat model](docs/threat-model.md).
 | How a photo's GPS position becomes its town when the worker may not reach the internet (exact positions are never stored) | 1 | worker hands over / backend reads / worker may reach Nominatim |
 | Who serves the photos after the login check | 1 / 3 | frontend nginx or backend; Traefik's ForwardAuth asks the backend either way |
 | The worker's image: exiftool needs Perl | 1 | minimal image with Perl, or another way to read and strip GPS data |
-| Positions to Nominatim: exact or rounded (R-17) | 1 | threat T-17 |
 | The originals' other metadata: removed or kept (R-19) | 1 | threat T-19 |
 | How long logs with IP addresses are kept (R-47) | 3 | threat T-50 |
 | The admin path to the Kubernetes API: SSH tunnel or VPN (R-37) | 4 | threat T-38 |
-| Notifications: minimal text on ntfy.sh, or ntfy on the platform (R-46) | 6 | threat T-49 |
+| Notifications: minimal text on ntfy.sh, or ntfy on our own server (R-46) | 6 | threat T-49 |
+| Where ntfy and the outside uptime check run – they must keep working when the node is down | 6 | the sidekick server is a candidate; a third-party service, so a new ADR first ([ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md)) |
+| The Kubernetes distribution: k3s, RKE2, kubeadm or Talos | before 3 | k3d (the local cluster of phase 3) only runs k3s |
 | How the existing users move to Keycloak | 2 | new passwords/passkeys, or a provider that reads bcrypt |
 | Ingress, Gateway API or Traefik's own routes | 3 | |
 | PostgreSQL as a plain StatefulSet or with an operator (e.g. CloudNativePG) | 3 | |

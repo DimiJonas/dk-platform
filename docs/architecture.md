@@ -35,7 +35,7 @@ configuration ([template](templates/component-readme.md)); the column "README" s
 | Photo worker | converts uploads and removes GPS data – isolated: no incoming connections, no internet, read-only filesystem, tight memory limit; jobs from a PostgreSQL queue | 1, 3, 4 | storybook `deploy/` |
 | PostgreSQL | StatefulSet with a persistent volume | 3 | storybook `deploy/` |
 | Photos volume | originals and small versions; ReadWriteOnce, so backend and worker share one node | 3 | storybook `deploy/` |
-| Backup CronJob | dump + photos, age-encrypted; restore test monthly | 3 | storybook `deploy/` |
+| Backup CronJob | dump + photos, age-encrypted; restore test monthly; pulled by a sidekick server ([ADR 0007](decisions/0007-backups-pulled-to-a-sidekick-server.md)) | 3 | storybook `deploy/` |
 | Landing page | dk-home as a small static container, served at the domain root | 1, 3 | dk-home |
 | Keycloak | identities: logins for the apps (OIDC), MFA/passkeys, single sign-on for Argo CD and Grafana, `kubectl` login | 2, 4 | `platform/keycloak/` |
 | Vault | secrets: short-lived database credentials, Kubernetes auth | 4 | `platform/vault/` |
