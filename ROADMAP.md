@@ -6,10 +6,10 @@
 
 - **Last finished:** 0.4 – Mermaid pictures in storybook (how it runs, a photo upload) and dk-srv
   (the host at a glance, the nightly security check); both link here.
-- **Next:** 0.5 – the threat model.
+- **Now:** 0.5 – the threat model: learned and quizzed; next its design and decisions.
 - **Then:** 0.6 – the RAM and disk budget.
 - **Open decisions:** see [below](#open-decisions).
-- **Production:** unchanged – the VPS with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
+- **Production:** unchanged – the server with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
 
 **Starting a new AI session** (when a session gets long and its history starts being compressed):
@@ -45,7 +45,9 @@ flowchart LR
    pod.
 
 Ground rules: production keeps running and stays secure the whole time; no secret and no domain in
-any repository, patch or AI session; fix what reaches the running app, no workarounds for unimportant
+any repository, patch or AI session; nothing about the production server that a reader doesn't need
+and an attacker could use – no addresses, no size, no provider, no upgrade plans (those live in
+dk-platform-env); fix what reaches the running app, no workarounds for unimportant
 findings (e.g. development-only tools); current versions and docs are checked, not remembered.
 
 Status marks: ✅ done · 🔄 in progress · 🔜 planned
@@ -63,7 +65,7 @@ Status marks: ✅ done · 🔄 in progress · 🔜 planned
 | 4 | Cluster security, measured before/after | laptop | 🔜 |
 | 5 | CI/CD and GitOps, signed images | GitHub, laptop | 🔜 |
 | 6 | Observability and runtime security | laptop | 🔜 |
-| 7 | Go-live after the server upgrade, cutover | server | 🔜 |
+| 7 | Go-live on the production server, cutover | server | 🔜 |
 | 8 | AWS with Terraform, time-boxed | AWS | 🔜 |
 
 No fixed weeks – built alongside daily life. Nothing is deployed to the server before phase 7.
@@ -77,7 +79,7 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 | 0.3 | This repository: documents, ADRs 0001–0004, the "now" and "target" pictures; dk-platform-env's README | ✅ |
 | 0.4 | Pictures for storybook (how it runs; uploading a photo) and dk-srv (the host at a glance; the nightly security check), in Mermaid | ✅ |
 | 0.5 | Threat model: data flows, trust boundaries 1–7, STRIDE per boundary, the resulting requirements | 🔜 |
-| 0.6 | RAM and disk budget: 4 GB now, 8 GB, 16 GB – what fits, measured later per pod | 🔜 |
+| 0.6 | RAM and disk budget: what each component needs – estimated now, measured per pod in phases 3–6 | 🔜 |
 | 0.7 | The open decisions sorted by the phase that needs them | 🔜 |
 
 ### 1. Containers 🔜
@@ -133,7 +135,7 @@ for dk-srv's site watch and notifications.
 
 ### 7. Go-live 🔜
 
-After the server upgrade (8 GB or more – decided with the measurements of phases 3–6): dk-srv
+On a production server sized by the measurements of phases 3–6: dk-srv
 adapted for a k3s node (forwarding on, the pod and service networks in the firewall, image
 registries and Let's Encrypt in the egress rules, AIDE/auditd exclusions for k3s's folders,
 fail2ban's nginx jails replaced, USG measured again) · migration rehearsal (database, photos) ·
@@ -164,6 +166,6 @@ Each becomes an ADR when its phase comes – with the options laid out first.
 | PostgreSQL as a plain StatefulSet or with an operator (e.g. CloudNativePG) | 3 | |
 | How the real client IP reaches the backend through k3s's load balancer and Traefik | 3 | otherwise the login limiter sees one IP for everyone |
 | Vault or OpenBao | 4 | the owner leans to Vault |
-| The server size: 8 GB or 16 GB | before 7 | from the measured RAM per pod; disk too (40 GB now) |
+| The production server's size | before 7 | from the measured RAM and disk per pod; recorded in dk-platform-env |
 | Third-party services (e.g. a voice server, a VPN for own access) on the platform | when wanted | [ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md): a new ADR first |
 | Object storage for the photos | with a second node | a ReadWriteOnce volume works on one node only |

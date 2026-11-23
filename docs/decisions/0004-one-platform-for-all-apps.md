@@ -13,7 +13,7 @@ share one?
 ## Decision drivers
 
 - isolation between apps
-- RAM on one small server (Keycloak, monitoring, Argo CD cost the same per cluster)
+- RAM on one server (Keycloak, monitoring, Argo CD cost the same per cluster)
 - one login for all apps; one set of policies, monitoring and updates
 - effort to run and to patch
 - learning value

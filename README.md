@@ -40,7 +40,8 @@ model (phase 0) goes through each of them. Each component, step by step:
 | dk-platform-env | the environments: the domain, which app version runs where, encrypted secrets | private |
 
 Why this split: [ADR 0002](docs/decisions/0002-repository-layout.md). Nothing in the public
-repositories belongs to one server: no domain (examples use `example.org`), no addresses, no keys.
+repositories belongs to one server: no domain (examples use `example.org`), no addresses, no keys,
+no server size or provider.
 
 ## Documentation
 
