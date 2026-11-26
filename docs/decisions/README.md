@@ -26,6 +26,7 @@ New ADR: copy [`adr-template.md`](adr-template.md) to the next number.
 | [0005](0005-threat-modelling-method.md) | Threat modelling: target and transition apart, Markdown and Mermaid, a 3×3 rating, STRIDE plus LINDDUN, requirements separate | accepted | 2026-11-23 |
 | [0006](0006-resource-policy.md) | Resource policy: trimmed scanners, Guaranteed only for data, logins and the network, single replicas, requests ≤ 80 % | accepted | 2026-11-23 |
 | [0007](0007-backups-pulled-to-a-sidekick-server.md) | Backups encrypted on the node, pulled every night by a small sidekick server (from phase 7) | accepted | 2026-11-23 |
+| [0008](0008-container-engine-on-the-laptop.md) | Container engine on the laptop: Docker Engine, rootful first, rootless later | accepted | 2026-11-26 |
 
 Decisions made before this repository existed are in the roadmaps of
 [storybook](https://github.com/DimiJonas/storybook/blob/main/ROADMAP.md) and

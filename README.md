@@ -7,7 +7,8 @@ monitoring), and as the way I learn DevSecOps, security engineering, IAM and clo
 properly: every step is explained before it's built, every decision is recorded with its options
 and reasons, and every hardening is measured against a published guide.
 
-**Status: phase 0 – foundations.** Nothing runs on Kubernetes yet. Production is still the hardened
+**Status: phase 0 – foundations – complete; phase 1 – containers – next.** Nothing runs on
+Kubernetes yet. Production is still the hardened
 VPS ([dk-srv](https://github.com/DimiJonas/dk-srv)) and stays untouched until a planned cutover.
 Where things stand: [`ROADMAP.md`](ROADMAP.md), "Where we are".
 
@@ -65,6 +66,6 @@ Each platform component gets its own `README.md` next to its configuration (temp
 
 ## Status
 
-A personal project, built alongside daily life – no fixed dates. Next: the open decisions sorted by phase.
+A personal project, built alongside daily life – no fixed dates. Next: phase 1 – containers.
 
 © All rights reserved. The code is public to read; there is no license for reuse.

@@ -67,6 +67,7 @@ Numbered **P1, P2, …** (the host's are A1–A13 in dk-srv; the storybook's own
 | | Risk | Why it's accepted |
 |---|---|---|
 | P1 | The hosting provider can technically access the server (hypervisor, console, disk snapshots) | Unavoidable on a rented server. Limited by keeping what matters encrypted where possible: the backups (age) leave the server, secrets are encrypted at rest (phase 4); the provider is chosen as trustworthy. Out of scope of the threat model. |
+| P2 | On the admin laptop, membership in the `docker` group is effectively root: rootful Docker's daemon runs as root and does what its socket is told ([ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md)) | The laptop has one user, who already holds the keys that matter (age, SSH, later the cluster credentials); the disk is encrypted; the Docker socket is never mounted into a container. Temporary: narrowed or closed when the laptop moves to rootless Docker (an open decision, see the roadmap). |
 
 ## Reporting a problem
 

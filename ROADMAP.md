@@ -4,13 +4,12 @@
 
 *Updated with every delivery – this section is also the hand-over to a new working session.*
 
-- **Last finished:** 0.6 – the RAM and disk budget
-  ([`docs/resource-budget.md`](docs/resource-budget.md)), the resource policy
-  ([ADR 0006](docs/decisions/0006-resource-policy.md)), backups pulled by a sidekick server
-  ([ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md)), the threat model's
-  level-0 diagram in TikZ.
-- **Next:** 0.7 – the open decisions sorted by the phase that needs them.
-- **Then:** phase 1 – containers.
+- **Last finished:** 0.7 – the open decisions in one table sorted by the phase that needs them
+  ([below](#open-decisions)); the container engine on the laptop
+  ([ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md)). Phase 0 is complete.
+- **Next:** phase 1 – containers, starting with its decisions: the base image family (measured),
+  the local pipeline's tools, and the photo worker's questions.
+- **Then:** phase 2 – IAM with Keycloak.
 - **Open decisions:** see [below](#open-decisions).
 - **Production:** unchanged – the server with dk-srv (CIS Ubuntu L1 92.7 % of all rules, 100 % with
   13 accepted risks; the backend's sandbox `systemd-analyze security` 1.4).
@@ -61,7 +60,7 @@ Status marks: ✅ done · 🔄 in progress · 🔜 planned
 
 | # | Phase | Where | Status |
 |---|---|---|---|
-| 0 | Foundations: repositories, threat model, decisions, RAM budget | laptop | 🔄 |
+| 0 | Foundations: repositories, threat model, decisions, RAM budget | laptop | ✅ |
 | 1 | Containers: hardened images, Compose, the photo worker | laptop | 🔜 |
 | 2 | IAM with Keycloak (still in Compose) | laptop | 🔜 |
 | 3 | Kubernetes basics with k3d | laptop | 🔜 |
@@ -73,7 +72,7 @@ Status marks: ✅ done · 🔄 in progress · 🔜 planned
 
 No fixed weeks – built alongside daily life. Nothing is deployed to the server before phase 7.
 
-### 0. Foundations 🔄
+### 0. Foundations ✅
 
 | Step | What | |
 |---|---|---|
@@ -83,12 +82,16 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
 | 0.4 | Pictures for storybook (how it runs; uploading a photo) and dk-srv (the host at a glance; the nightly security check), in Mermaid | ✅ |
 | 0.5 | Threat model: data flows, STRIDE per element and a LINDDUN pass, 54 + 7 threats rated, 59 requirements with checks ([ADR 0005](docs/decisions/0005-threat-modelling-method.md)) | ✅ |
 | 0.6 | RAM and disk budget: what each component needs – estimated now, measured per pod in phases 1–6 ([budget](docs/resource-budget.md)); resource policy ([ADR 0006](docs/decisions/0006-resource-policy.md)); backups pulled by a sidekick server ([ADR 0007](docs/decisions/0007-backups-pulled-to-a-sidekick-server.md)) | ✅ |
-| 0.7 | The open decisions sorted by the phase that needs them | 🔜 |
+| 0.7 | The open decisions in one table sorted by the phase that needs them; the container engine on the laptop ([ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md)) | ✅ |
 
 ### 1. Containers 🔜
 
 - learn: images and layers, namespaces, cgroups, seccomp, capabilities (and how they map to the
   backend's systemd sandbox today)
+- Docker Engine on the laptop, rootful to start with
+  ([ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md))
+- the base image family, chosen by measurement: the same image built on two or three candidates,
+  compared by size and Trivy's CVE counts
 - multi-stage Dockerfiles: frontend (React build in an unprivileged nginx), backend, photo worker,
   dk-home; non-root, minimal or distroless bases, read-only root filesystem, no shell
 - the **photo worker**: conversion out of the backend into its own process, jobs through a
@@ -96,6 +99,8 @@ No fixed weeks – built alongside daily life. Nothing is deployed to the server
   crash it forever; the app copes with photos that aren't converted yet
 - Docker Compose for all parts
 - hadolint, Trivy; measured: image size and CVE counts per image
+- a **small local pipeline** – build, lint, scan, measure on every change – as a first, hands-on
+  start of the CI/CD that phase 5 takes to GitHub
 
 ### 2. IAM with Keycloak (in Compose) 🔜
 
@@ -131,7 +136,8 @@ Benchmark), Kubescape (configuration only), Trivy Operator – **measured before
 
 GitHub Actions with Semgrep, Trivy, gitleaks · SBOMs (syft) · cosign keyless signing through
 GitHub's OIDC (no keys to manage) · build provenance attestations · Renovate for image digests ·
-Argo CD with single sign-on through Keycloak · Kyverno admits only signed images.
+Argo CD with single sign-on through Keycloak · Kyverno admits only signed images · how the local
+pipeline from phase 1 and GitHub Actions fit together.
 
 ### 6. Observability and runtime security 🔜
 
@@ -162,26 +168,33 @@ volumes.
 
 ## Open decisions
 
-Each becomes an ADR when its phase comes – with the options laid out first. Every phase also works
+Sorted by the phase that needs each decision – decided at the last responsible moment, when the
+facts are there but nothing has been built on a guess yet. Each becomes an ADR when its phase comes
+– with the options laid out first – and then leaves this table. Every phase also works
 through its part of [`docs/security-requirements.md`](docs/security-requirements.md), and ends with a
 review of the [threat model](docs/threat-model.md).
 
-| Decision | Needed in | Notes |
-|---|---|---|
-| How a photo's GPS position becomes its town when the worker may not reach the internet (exact positions are never stored) | 1 | worker hands over / backend reads / worker may reach Nominatim |
-| Who serves the photos after the login check | 1 / 3 | frontend nginx or backend; Traefik's ForwardAuth asks the backend either way |
-| The worker's image: exiftool needs Perl | 1 | minimal image with Perl, or another way to read and strip GPS data |
-| The originals' other metadata: removed or kept (R-19) | 1 | threat T-19 |
-| How long logs with IP addresses are kept (R-47) | 3 | threat T-50 |
-| The admin path to the Kubernetes API: SSH tunnel or VPN (R-37) | 4 | threat T-38 |
-| Notifications: minimal text on ntfy.sh, or ntfy on our own server (R-46) | 6 | threat T-49 |
-| Where ntfy and the outside uptime check run – they must keep working when the node is down | 6 | the sidekick server is a candidate; a third-party service, so a new ADR first ([ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md)) |
-| The Kubernetes distribution: k3s, RKE2, kubeadm or Talos | before 3 | k3d (the local cluster of phase 3) only runs k3s |
-| How the existing users move to Keycloak | 2 | new passwords/passkeys, or a provider that reads bcrypt |
-| Ingress, Gateway API or Traefik's own routes | 3 | |
-| PostgreSQL as a plain StatefulSet or with an operator (e.g. CloudNativePG) | 3 | |
-| How the real client IP reaches the backend through k3s's load balancer and Traefik | 3 | otherwise the login limiter sees one IP for everyone |
-| Vault or OpenBao | 4 | the owner leans to Vault |
-| The production server's size | before 7 | from the measured RAM and disk per pod; recorded in dk-platform-env |
-| Third-party services (e.g. a voice server, a VPN for own access) on the platform | when wanted | [ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md): a new ADR first |
-| Object storage for the photos | with a second node | a ReadWriteOnce volume works on one node only |
+| Needed in | Decision | Options known so far | Related |
+|---|---|---|---|
+| 1 | The base image family | Debian slim, Alpine, Google distroless, Docker Hardened Images, Chainguard (free: `latest` only); two or three compared by image size and CVE counts, exceptions allowed per image | R-30 |
+| 1 | The local pipeline: its tools and steps | a Makefile or script, the pre-commit framework, the GitHub Actions workflows run locally, a small CI server in a container | R-26, R-30 |
+| 1 | How a photo's GPS position becomes its town when the worker may not reach the internet (exact positions are never stored; the rounding is decided in R-17) | the worker hands the position over · the backend reads it · the worker may reach Nominatim | T-17, T-18 |
+| 1 | The worker's image: exiftool needs Perl | a minimal image with Perl, or another way to read and strip GPS data | T-13 |
+| 1 | The originals' other metadata: removed or kept | removed · kept deliberately | R-19, T-19 |
+| 1 / 3 | Who serves the photos after the login check | frontend nginx or backend; Traefik's ForwardAuth asks the backend either way | R-06 |
+| 2 | How the existing users move to Keycloak | new passwords or passkeys, or a provider that reads bcrypt | TT-07 |
+| before 3 | The Kubernetes distribution | k3s, RKE2, kubeadm, Talos; k3d (the local cluster) only runs k3s | |
+| before 3 | When and how far the laptop moves to rootless Docker | the image builds and Compose only, or the k3d cluster too – k3d on rootless Docker is undocumented, Cilium and Falco need eBPF in the host's kernel | [ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md), P2 |
+| 3 | Ingress, Gateway API or Traefik's own routes | | |
+| 3 | PostgreSQL as a plain StatefulSet or with an operator | e.g. CloudNativePG | |
+| 3 | How the real client IP reaches the backend through k3s's load balancer and Traefik | otherwise the login limiter sees one IP for everyone | R-02 |
+| 3 | How long logs with IP addresses are kept | Loki's retention follows from it (30 days assumed in the budget) | R-47, T-50 |
+| 4 | The admin path to the Kubernetes API | an SSH tunnel or a VPN | R-37, T-38 |
+| 4 | Vault or OpenBao | the owner leans to Vault | R-29 |
+| 4 | Vault's agent injector or a secrets operator | sized in the [budget](docs/resource-budget.md) as one small pod | R-29 |
+| after 4's measurements | kube-bench nightly or on demand, and whether Kubescape stays | on demand would work like USG on today's host: after k3s upgrades and configuration changes; a change to the nightly run supersedes part of ADR 0006 and changes R-51 | [ADR 0006](docs/decisions/0006-resource-policy.md), R-51 |
+| 5 | How the local pipeline and GitHub Actions fit together | pre-commit hooks (gitleaks, linters), the CI workflows run locally, a pipeline in k3d | R-26, R-33 |
+| 6 | Notifications: what goes through ntfy, and where ntfy and the outside uptime check run – they must keep working when the node is down | minimal text on ntfy.sh · ntfy on our own server; the sidekick server is a candidate; a third-party service there needs a new ADR first ([ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md)) | R-46, R-48, T-49 |
+| before 7 | The production server's size | from the measured RAM and disk per pod; recorded in dk-platform-env | [budget](docs/resource-budget.md) |
+| when wanted | Third-party services on the platform (e.g. a voice server, a VPN for own access) | a new ADR first | [ADR 0004](docs/decisions/0004-one-platform-for-all-apps.md) |
+| with a second node | Object storage for the photos | a ReadWriteOnce volume works on one node only | |

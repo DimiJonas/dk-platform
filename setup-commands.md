@@ -44,7 +44,8 @@ docs/diagrams/build.sh          # in dk-platform: rebuilds every picture
 Mermaid pictures need nothing: GitHub draws them, and so do most editors' markdown previews.
 
 The tools for the later phases (Docker, k3d, kubectl, helm, sops, age, …) are added to this part
-when they're first used.
+when they're first used – Docker Engine in phase 1, rootful to start with, and later the move to
+its rootless mode ([ADR 0008](docs/decisions/0008-container-engine-on-the-laptop.md)).
 
 ## 1. The local cluster (k3d) 🔜
 

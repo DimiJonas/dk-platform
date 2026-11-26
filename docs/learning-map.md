@@ -17,8 +17,9 @@ learned and used, and where to read. The deep explanation comes right before eac
 | Technology | What it is | For us | Read |
 |---|---|---|---|
 | OCI images and containers | a packaged filesystem in layers + a process confined by kernel features (namespaces, cgroups, seccomp, capabilities) | every part of the storybook as an image | [OCI](https://opencontainers.org/), [Docker docs](https://docs.docker.com/) |
+| Container engines: Docker, rootful and rootless | the program that builds images and starts containers; rootful runs a root daemon, rootless runs it inside a user namespace | Docker Engine on the laptop, rootful first, rootless later ([ADR 0008](decisions/0008-container-engine-on-the-laptop.md)) | [Docker Engine](https://docs.docker.com/engine/), [rootless mode](https://docs.docker.com/engine/security/rootless/) |
+| Base image families | the bottom layers of an image: Debian slim, Alpine, distroless, hardened images (Docker, Chainguard) | the base for every image, chosen by measured size and CVE counts; minimal bases without shell or package manager leave less to attack | [distroless](https://github.com/GoogleContainerTools/distroless), [Docker Hardened Images](https://docs.docker.com/dhi/), [Chainguard Containers](https://www.chainguard.dev/docs/chainguard/containers/overview) |
 | Multi-stage Dockerfiles | build in one stage, copy only the result into a small runtime image | small images without build tools | [Docker: multi-stage builds](https://docs.docker.com/build/building/multi-stage/) |
-| Minimal / distroless base images | runtime images without shell or package manager | less to attack, fewer CVEs | [distroless](https://github.com/GoogleContainerTools/distroless) |
 | Docker Compose | several containers described in one file | all parts running locally, before Kubernetes | [Compose](https://docs.docker.com/compose/) |
 | hadolint | a linter for Dockerfiles | Dockerfile best practices, checked | [hadolint](https://github.com/hadolint/hadolint) |
 | Trivy | a scanner for CVEs, misconfigurations and secrets | CVE counts per image, before/after | [Trivy](https://trivy.dev/) |
